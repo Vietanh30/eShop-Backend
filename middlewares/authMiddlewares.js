@@ -12,7 +12,8 @@ class authMiddlewares {
         );
         req.user = { _id: decodedToken._id };
         next();
-      } catch {
+      } catch (err) {
+        console.log(err)
         res.status(401);
         throw new Error("Not authorized, token failed");
       }

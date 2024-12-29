@@ -8,33 +8,17 @@ const orderModel = new Schema(
       required: true,
       ref: "User",
     },
-
     orderList: [
       {
-        productId: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
           ref: "Product",
-        },
-        name: {
-          type: String,
-          required: true,
-          default: "",
-        },
-        image: {
-          type: String,
-          required: true,
-          default: "",
         },
         color: {
           type: String,
           required: true,
           default: "",
-        },
-        price: {
-          type: String,
-          required: true,
-          default: 0,
         },
         quantity: {
           type: Number,
@@ -42,6 +26,9 @@ const orderModel = new Schema(
         },
       },
     ],
+    totalPrice: {
+      type: Number,
+    },
     paymentMethod: {
       type: String,
       required: true,
@@ -51,15 +38,31 @@ const orderModel = new Schema(
       required: true,
       default: "pending",
     },
-    price: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
   },
   {
     timestamps: true,
   }
 );
+
+// Middleware để tính toán totalPrice trước khi lưu
+orderModel.pre("save", async function (next) {
+  if (this.isModified("orderList")) {
+    const Product = mongoose.model("Product");
+
+    let total = 0;
+
+    for (const item of this.orderList) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        // Tính giá sau giảm giá 10%
+        const discountedPrice = product.price - product.price * product.offer / 100;
+        total += discountedPrice * item.quantity;
+      }
+    }
+
+    this.totalPrice = total; // Gán totalPrice với tổng đã tính
+  }
+  next();
+});
 
 module.exports = mongoose.model("Order", orderModel);

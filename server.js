@@ -7,14 +7,13 @@ const db = require("./config/db");
 const routes = require("./routes");
 const cors = require("cors");
 const errorHandleMiddlewares = require("./middlewares/errorHandleMiddlewares");
+const categoriesModel = require("./models/categoriesModel");
 
 // For .env access
 require("dotenv").config();
 
 // Connect to DB
 db.connect();
-
-// Check mode
 if (process.env.NODE_ENV === "dev") {
   app.use(morgan("dev"));
 }

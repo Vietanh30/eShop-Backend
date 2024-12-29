@@ -3,25 +3,24 @@ const router = express.Router();
 const productController = require("../controllers/productController");
 const authMiddlewares = require("../middlewares/authMiddlewares");
 
-router.get("/cate", productController.getAllCates);
-router.get("/cateArr", productController.getAllCatesArray);
-
+// Lấy tất cả sản phẩm
 router.get("/", productController.getAllProducts);
 
-router.get("/phone", productController.getProductPhone);
-router.get("/laptop", productController.getProductLaptop);
-router.get("/tablet", productController.getProductTablet);
-router.get("/monitor", productController.getProductMonitor);
-router.get("/tivi", productController.getProductTivi);
-router.get("/watch", productController.getProductWatch);
-router.get("/speakerHeadphone", productController.getProductSpeakerHead);
-router.get("/oldProduct", productController.getProductOldProduct);
-router.get("/service", productController.getProductService);
-router.get("/accessory", productController.getProductAccessory);
-
+// Lấy sản phẩm theo slug
 router.get("/:slug", productController.getProductBySlug);
 
-router.get("/id/:id", productController.getProductByID);
+// // Lấy sản phẩm theo ID
+// router.get("/id/:id", productController.getProductByID);
+
+// Tạo sản phẩm mới (chỉ dành cho Admin)
+router.post(
+  "/",
+  authMiddlewares.protect, // Middleware bảo vệ (xác thực người dùng)
+  authMiddlewares.isAdmin, // Middleware kiểm tra quyền Admin
+  productController.createProduct
+);
+
+// Cập nhật sản phẩm (chỉ dành cho Admin)
 router.patch(
   "/:id",
   authMiddlewares.protect,

@@ -1,3 +1,4 @@
+const categoryRouter = require("./categoryRoutes");
 const productRouter = require("./productRoutes");
 const userRouter = require("./userRoutes");
 const cartRouter = require("./cartRoutes");
@@ -5,6 +6,7 @@ const orderRouter = require("./orderRoutes");
 const messageRouter = require("./messageRoutes");
 
 function routes(app) {
+  app.use("/api/categories", categoryRouter);
   app.use("/api/product", productRouter);
   app.use("/api/user", userRouter);
   app.use("/api/cart", cartRouter);

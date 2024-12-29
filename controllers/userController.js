@@ -113,7 +113,6 @@ class UserController {
           email: req.body.email || user.email,
           phoneNumber: req.body.phoneNumber || user.phoneNumber,
           gender: req.body.gender || user.gender,
-          roleUser: req.body.roleUser || user.roleUser,
           password: hashPassword,
           token: generateToken(user._id),
         },

@@ -8,43 +8,27 @@ const cartModel = new Schema(
       required: true,
       ref: "User",
     },
-
     orderList: [
       {
-        productId: {
+        product: {
           type: mongoose.Schema.Types.ObjectId,
           required: true,
           ref: "Product",
         },
-        name: {
-          type: String,
-          required: true,
-          default: "",
-        },
-        image: {
-          type: String,
-          required: true,
-          default: "",
-        },
         color: {
           type: String,
           required: true,
-          default: "",
-        },
-        price: {
-          type: String,
-          required: true,
-          default: 0,
         },
         quantity: {
           type: Number,
           required: true,
+          default: 1, // Mặc định là 1
         },
       },
     ],
   },
   {
-    timestamps: true,
+    timestamps: true, // Thêm thời gian tạo và cập nhật
   }
 );
 

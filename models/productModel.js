@@ -12,20 +12,8 @@ const productModel = new Schema(
       required: true,
     },
     cate: {
-      type: [
-        {
-          slug: {
-            type: String,
-            required: true,
-          },
-          name: {
-            type: String,
-            required: true,
-          },
-        },
-      ],
-      required: true,
-      default: [],
+      type: Schema.Types.ObjectId,
+      ref: "Categories"
     },
     color: {
       type: [String],
@@ -42,19 +30,9 @@ const productModel = new Schema(
       default: [],
     },
     offer: {
-      type: [String],
+      type: Number,
       required: true,
       default: [],
-    },
-    configTitle: {
-      type: String,
-      required: true,
-      default: "",
-    },
-    configImage: {
-      type: String,
-      required: true,
-      default: "",
     },
     configDesc: {
       type: Object,
@@ -63,26 +41,6 @@ const productModel = new Schema(
     },
     description: {
       type: [String],
-      required: true,
-      default: [],
-    },
-    similarProduct: {
-      type: [
-        {
-          name: {
-            type: String,
-            required: true,
-          },
-          slug: {
-            type: String,
-            required: true,
-          },
-          img: {
-            type: String,
-            required: true,
-          },
-        },
-      ],
       required: true,
       default: [],
     },
@@ -95,34 +53,6 @@ const productModel = new Schema(
       type: Number,
       required: true,
       default: 0,
-    },
-    news: {
-      type: {
-        name: { type: String, required: true },
-        slug: { type: String, required: true },
-        subNews: [
-          {
-            name: {
-              type: String,
-              required: true,
-            },
-            time: {
-              type: String,
-              required: true,
-            },
-            img: {
-              type: String,
-              required: true,
-            },
-            slug: {
-              type: String,
-              required: true,
-            },
-          },
-        ],
-      },
-      required: true,
-      default: {},
     },
   },
   {
