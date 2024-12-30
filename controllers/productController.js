@@ -21,6 +21,18 @@ class ProductController {
       throw new Error("Product does not exist!");
     }
   });
+  getProductByCate = asyncHandler(async (req, res) => {
+    const product = await Product.find({ cate: req.params.cateId }).populate(
+      "cate",
+      "name slug"
+    );
+    if (product) {
+      res.json(product);
+    } else {
+      res.status(404);
+      throw new Error("Product does not exist!");
+    }
+  });
 
   // [GET: api/product/:id] - Lấy sản phẩm theo ID
   getProductByID = asyncHandler(async (req, res) => {

@@ -11,7 +11,7 @@ class UserController {
   //  [ POST - ROUTE: api/user/register ]
   registerUser = asyncHandler(async (req, res) => {
     const { name, password, phoneNumber, gender, email } = req.body;
-    const user = await User.findOne({ $or: [{ email }, { name }] });
+    const user = await User.findOne({ $or: [{ email }, { phoneNumber }] });
     if (!name || !password || !phoneNumber || !gender || !email) {
       res.status(404);
       throw new Error("Vui lòng điền đầy đủ các trường!");
@@ -28,22 +28,8 @@ class UserController {
         password: hashPassword,
         roleUser: "customer",
       });
-      if (newUser) {
-        await Cart.create({ user: newUser._id, orderList: [] });
-        res.json({
-          _id: newUser._id,
-          name,
-          email,
-          name,
-          phoneNumber,
-          gender,
-          newUser: newUser.roleUser,
-        });
-      } else {
-        res.status(501);
-        throw new Error("Fail to resister new user!");
-      }
-    } else {
+    }
+    else {
       res.status(404);
       throw new Error("Người dùng đã tồn tại!");
     }
@@ -73,7 +59,7 @@ class UserController {
   getUserProfile = asyncHandler(async (req, res) => {
     var user = await User.findById(req.user._id);
 
-    
+
     if (user) {
       res.json({
         _id: user._id,

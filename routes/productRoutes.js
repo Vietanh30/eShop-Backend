@@ -10,7 +10,7 @@ router.get("/", productController.getAllProducts);
 router.get("/:slug", productController.getProductBySlug);
 
 // // Lấy sản phẩm theo ID
-// router.get("/id/:id", productController.getProductByID);
+router.get("/cate/:cateId", productController.getProductByCate);
 
 // Tạo sản phẩm mới (chỉ dành cho Admin)
 router.post(
