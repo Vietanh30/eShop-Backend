@@ -8,12 +8,14 @@ const routes = require("./routes");
 const cors = require("cors");
 const errorHandleMiddlewares = require("./middlewares/errorHandleMiddlewares");
 const categoriesModel = require("./models/categoriesModel");
-
+const path = require("path");
 // For .env access
 require("dotenv").config();
 
 // Connect to DB
 db.connect();
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 if (process.env.NODE_ENV === "dev") {
   app.use(morgan("dev"));
 }
