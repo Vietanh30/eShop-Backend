@@ -1,6 +1,6 @@
 const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
-
+const uploadController = require("./uploadController");
 class ProductController {
   // [GET: api/product] - Lấy tất cả sản phẩm
   getAllProducts = asyncHandler(async (req, res) => {
@@ -84,38 +84,64 @@ class ProductController {
   });
 
   // [POST: api/product] - Tạo sản phẩm mới
-  createProduct = asyncHandler(async (req, res) => {
-    const { name, cate, color, price, image, offer, configDesc, description, review, rating } =
-      req.body;
+  createProduct = asyncHandler((req, res) => {
+    const uploadHandler = uploadController.upload.array('images', 10); // Middleware upload
 
-    const generateSlug = (str) =>
-      str
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
+    uploadHandler(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({
+          message: 'Upload thất bại!',
+          error: err.message,
+        });
+      }
 
-    const slug = generateSlug(name);
+      // Parse dữ liệu từ form-data
+      const { name, cate, price, offer, review, rating } = req.body;
 
-    const newProduct = new Product({
-      name,
-      slug,
-      cate,
-      color,
-      price,
-      image,
-      offer,
-      configDesc,
-      description,
-      review,
-      rating,
+      // Parse các trường phức tạp (JSON string)
+      const color = req.body.color;
+      const configDesc = req.body.configDesc ;
+      const description = req.body.description ;
+
+      // Chuyển đổi các file upload thành link
+      const images = (req.files || []).map(file => changeLinkUpload(file));
+
+      const generateSlug = (str) =>
+        str
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-");
+
+      const slug = generateSlug(name);
+
+      const newProduct = new Product({
+        name,
+        slug,
+        cate,
+        color,
+        price,
+        image: images, // Lưu link ảnh vào trường image
+        offer,
+        configDesc,
+        description,
+        review,
+        rating,
+      });
+
+      const savedProduct = await newProduct.save();
+      res.status(201).json({
+        message: 'Tạo sản phẩm thành công!',
+        product: savedProduct,
+      });
     });
-
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
   });
-}
 
+
+}
+function changeLinkUpload(file) {
+  return "http://localhost:8000/" + file.destination + file.filename
+}
 module.exports = new ProductController();
