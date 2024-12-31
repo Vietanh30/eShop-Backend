@@ -50,7 +50,7 @@ class UploadController {
 
             res.status(200).json({
                 message: 'Upload thành công!',
-                file: req.file,
+                file: changeLinkUpload(req.file),
             });
         });
     });
@@ -71,13 +71,18 @@ class UploadController {
                     message: 'Không có tệp nào được tải lên!',
                 });
             }
-
+            var linkFile = [];
+            req.files.forEach(file => {
+                linkFile.push(changeLinkUpload(file))
+            });
             res.status(200).json({
                 message: 'Upload thành công!',
-                files: req.files,
+                files: linkFile,
             });
         });
     });
 }
-
+function changeLinkUpload(file) {
+    return "http://localhost:8000/" + file.destination + file.filename
+}
 module.exports = new UploadController();
