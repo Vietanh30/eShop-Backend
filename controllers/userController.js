@@ -28,8 +28,8 @@ class UserController {
         password: hashPassword,
         roleUser: "customer",
       });
-    }
-    else {
+      res.json(newUser);
+    } else {
       res.status(404);
       throw new Error("Người dùng đã tồn tại!");
     }
@@ -58,7 +58,6 @@ class UserController {
   //  [ GET - ROUTE: api/user ]
   getUserProfile = asyncHandler(async (req, res) => {
     var user = await User.findById(req.user._id);
-
 
     if (user) {
       res.json({
