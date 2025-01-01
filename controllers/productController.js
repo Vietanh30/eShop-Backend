@@ -49,26 +49,58 @@ class ProductController {
   });
 
   // [PATCH: api/product/:id] - Cập nhật sản phẩm
-  updateProduct = asyncHandler(async (req, res) => {
-    const { name, ...rest } = req.body;
+  // [PATCH: api/product/:id] - Cập nhật sản phẩm
+  updateProduct = asyncHandler((req, res) => {
+    const uploadHandler = uploadController.upload.array("images", 10); // Middleware upload
 
-    const generateSlug = (str) =>
-      str
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .trim()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .replace(/\s+/g, "-");
-
-    const pro = await Product.findById(req.params.id);
-
-    if (pro) {
-      let updatedFields = { ...rest };
-      if (name) {
-        updatedFields.name = name;
-        updatedFields.slug = generateSlug(name); // Tự động cập nhật slug
+    uploadHandler(req, res, async (err) => {
+      if (err) {
+        return res.status(400).json({
+          message: "Upload thất bại!",
+          error: err.message,
+        });
       }
+
+      const { name, cate, price, offer, color, configDesc, description } =
+        req.body;
+
+      // Chuyển đổi JSON string thành đối tượng
+      const parsedConfigDesc = JSON.parse(configDesc);
+      const parsedColor = JSON.parse(color);
+      const parsedDescription = JSON.parse(description);
+
+      // Chuyển đổi các file upload thành link
+      const images = (req.files || []).map((file) => changeLinkUpload(file));
+
+      // Tạo slug từ tên sản phẩm
+      const generateSlug = (str) =>
+        str
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .trim()
+          .replace(/[^a-z0-9\s-]/g, "")
+          .replace(/\s+/g, "-");
+
+      const product = await Product.findById(req.params.id);
+
+      if (!product) {
+        res.status(404).json({ message: "Product does not exist!" });
+        return;
+      }
+
+      // Cập nhật các trường
+      const updatedFields = {
+        name: name || product.name, // Giữ nguyên tên nếu không có update
+        slug: name ? generateSlug(name) : product.slug, // Cập nhật slug nếu có tên mới
+        cate: cate || product.cate,
+        price: price || product.price,
+        offer: offer || product.offer,
+        color: parsedColor || product.color,
+        image: images.length > 0 ? images : product.image, // Cập nhật hình ảnh nếu có
+        configDesc: parsedConfigDesc || product.configDesc,
+        description: parsedDescription || product.description,
+      };
 
       const updatedProduct = await Product.findByIdAndUpdate(
         req.params.id,
@@ -77,20 +109,17 @@ class ProductController {
       );
 
       res.json(updatedProduct);
-    } else {
-      res.status(404);
-      throw new Error("Product does not exist");
-    }
+    });
   });
 
   // [POST: api/product] - Tạo sản phẩm mới
   createProduct = asyncHandler((req, res) => {
-    const uploadHandler = uploadController.upload.array('images', 10); // Middleware upload
+    const uploadHandler = uploadController.upload.array("images", 10); // Middleware upload
 
     uploadHandler(req, res, async (err) => {
       if (err) {
         return res.status(400).json({
-          message: 'Upload thất bại!',
+          message: "Upload thất bại!",
           error: err.message,
         });
       }
@@ -99,13 +128,14 @@ class ProductController {
       const { name, cate, price, offer, review, rating } = req.body;
 
       // Parse các trường phức tạp (JSON string)
-      const color = req.body.color;
-      const configDesc = req.body.configDesc ;
-      const description = req.body.description ;
+      const color = JSON.parse(req.body.color);
+      const configDesc = JSON.parse(req.body.configDesc);
+      const description = JSON.parse(req.body.description);
 
       // Chuyển đổi các file upload thành link
-      const images = (req.files || []).map(file => changeLinkUpload(file));
+      const images = (req.files || []).map((file) => changeLinkUpload(file));
 
+      // Tạo slug từ tên sản phẩm
       const generateSlug = (str) =>
         str
           .toLowerCase()
@@ -133,15 +163,13 @@ class ProductController {
 
       const savedProduct = await newProduct.save();
       res.status(201).json({
-        message: 'Tạo sản phẩm thành công!',
+        message: "Tạo sản phẩm thành công!",
         product: savedProduct,
       });
     });
   });
-
-
 }
 function changeLinkUpload(file) {
-  return "http://localhost:8000/" + file.destination + file.filename
+  return "http://localhost:8000/" + file.destination + file.filename;
 }
 module.exports = new ProductController();

@@ -9,12 +9,14 @@ const cors = require("cors");
 const errorHandleMiddlewares = require("./middlewares/errorHandleMiddlewares");
 const categoriesModel = require("./models/categoriesModel");
 const path = require("path");
+const productModel = require("./models/productModel");
+const orderModel = require("./models/orderModel");
 // For .env access
 require("dotenv").config();
 
 // Connect to DB
 db.connect();
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV === "dev") {
   app.use(morgan("dev"));
@@ -29,8 +31,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-app.use(cors());
-
+app.use(
+  cors({
+    origin: "*", // hoặc '*' để cho phép tất cả
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Thêm PATCH vào đây
+  })
+);
 app.get("/", (req, res) => {
   res.send("Successfully running !");
 });
@@ -43,5 +49,4 @@ app.use(errorHandleMiddlewares.errorHandler);
 app.listen(port, () => {
   console.log(`App listening at port: ${port}`);
 });
-
 require("./cron/removeChat");

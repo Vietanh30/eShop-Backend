@@ -4,15 +4,14 @@ const asyncHandler = require("express-async-handler");
 class CartController {
   // [GET: api/cart] - Lấy giỏ hàng của người dùng
   getCart = asyncHandler(async (req, res) => {
-    const cart = await Cart.findOne({ user: req.user._id })
-      .populate({
-        path: "orderList.product",
-        select: "name price cate image slug", 
-        populate: {
-          path: "cate",
-          select: "name slug", 
-        },
-      });
+    const cart = await Cart.findOne({ user: req.user._id }).populate({
+      path: "orderList.product",
+      select: "name price cate image slug",
+      populate: {
+        path: "cate",
+        select: "name slug",
+      },
+    });
     if (cart) {
       res.json(cart.orderList);
     } else {
