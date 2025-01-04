@@ -4,16 +4,19 @@ const uploadController = require("./uploadController");
 class ProductController {
   // [GET: api/product] - Lấy tất cả sản phẩm
   getAllProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({ status: 1 }).populate("cate", "name slug");
+    const products = await Product.find({ status: 1 }).populate(
+      "cate",
+      "name slug"
+    );
     res.json(products);
   });
 
   // [GET: api/product/:slug] - Lấy sản phẩm theo slug
   getProductBySlug = asyncHandler(async (req, res) => {
-    const product = await Product.findOne({ status: 1, slug: req.params.slug }).populate(
-      "cate",
-      "name slug"
-    );
+    const product = await Product.findOne({
+      status: 1,
+      slug: req.params.slug,
+    }).populate("cate", "name slug");
     if (product) {
       res.json(product);
     } else {
@@ -22,10 +25,10 @@ class ProductController {
     }
   });
   getProductByCate = asyncHandler(async (req, res) => {
-    const product = await Product.find({ status: 1, cate: req.params.cateId }).populate(
-      "cate",
-      "name slug"
-    );
+    const product = await Product.find({
+      status: 1,
+      cate: req.params.cateId,
+    }).populate("cate", "name slug");
     if (product) {
       res.json(product);
     } else {
@@ -169,14 +172,13 @@ class ProductController {
     });
   });
   deleteProduct = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id);
-    product.status = 0;
-    product.save();
+    const product = await Product.findByIdAndUpdate(req.params.id, {
+      status: 0,
+    });
     res.status(200).json({
       message: "Xóa sản phẩm thành công!",
-      product: savedProduct,
     });
-  })
+  });
 }
 function changeLinkUpload(file) {
   return "http://localhost:8000/" + file.destination + file.filename;

@@ -28,8 +28,8 @@ router.patch(
   productController.updateProduct
 );
 // Xóa sản phẩm (chỉ dành cho Admin)
-router.delete(
-  "/:id",
+router.post(
+  "/delete/:id",
   authMiddlewares.protect,
   authMiddlewares.isAdmin,
   productController.deleteProduct
