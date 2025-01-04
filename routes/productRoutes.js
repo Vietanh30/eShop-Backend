@@ -27,5 +27,11 @@ router.patch(
   authMiddlewares.isAdmin,
   productController.updateProduct
 );
-
+// Xóa sản phẩm (chỉ dành cho Admin)
+router.delete(
+  "/:id",
+  authMiddlewares.protect,
+  authMiddlewares.isAdmin,
+  productController.deleteProduct
+);
 module.exports = router;

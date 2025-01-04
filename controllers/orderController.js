@@ -63,6 +63,24 @@ class OrderController {
     const updatedOrder = await order.save();
     res.status(200).json(updatedOrder);
   });
+
+  // [ POST - ROUTER: api/order/cancel/:id ] - Hủy đơn hàng
+  cancelOrder = asyncHandler(async (req, res) => {
+    const foundOrder = await Order.findOne({
+      _id:  req.params.id,
+      user: req.user._id,
+    })
+    if (!foundOrder) {
+      return res.status(404).json({ message: "Order does not exist!" });
+    }
+    foundOrder.paymentStatus = "canceled";
+
+    const updatedOrder = await foundOrder.save();
+    res.status(201).json({
+      message: "Xóa sản phẩm thành công!",
+      order: updatedOrder,
+    });
+  })
 }
 
 module.exports = new OrderController();
